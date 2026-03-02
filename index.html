@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <title>Kiribati Music Hub</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
     body { background: linear-gradient(to bottom, #003366, #02101f); color: #fff; padding-bottom: 90px; }
@@ -15,26 +14,17 @@
       position: sticky; top: 0; z-index: 10; backdrop-filter: blur(8px);
     }
 
-    .logo {
-      font-weight: 800; color: #FFCC33; text-transform: uppercase;
-      letter-spacing: 0.08em; display: flex; align-items: center; gap: 6px;
-    }
+    .logo { font-weight: 800; color: #FFCC33; text-transform: uppercase; letter-spacing: 0.08em; display: flex; align-items: center; gap: 6px; }
     .logo-icon { font-size: 1.3rem; }
 
-    nav a {
-      margin-left: 16px; color: #fff; text-decoration: none;
-      border-bottom: 2px solid transparent; font-size: 0.9rem;
-    }
+    nav a { margin-left: 16px; color: #fff; text-decoration: none; border-bottom: 2px solid transparent; font-size: 0.9rem; }
     nav a.active, nav a:hover { border-bottom-color: #FFCC33; }
 
     #app { padding: 24px; max-width: 1000px; margin: 0 auto; }
     .section-title { font-size: 1.7rem; margin-bottom: 8px; }
     .section-subtitle { opacity: 0.85; margin-bottom: 20px; }
 
-    .artist-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
-      gap: 16px;
-    }
+    .artist-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 16px; }
     .artist-card {
       background: rgba(255,255,255,0.05); padding: 16px; border-radius: 12px;
       cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -45,10 +35,7 @@
     .artist-avatar { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; margin-bottom: 8px; }
     .artist-name { font-weight: 600; }
     .artist-island { font-size: 0.8rem; opacity: 0.8; margin-bottom: 6px; }
-    .tag {
-      display: inline-block; font-size: 0.7rem; padding: 2px 8px;
-      border-radius: 999px; background: rgba(255,204,51,0.15); color: #FFCC33;
-    }
+    .tag { display: inline-block; font-size: 0.7rem; padding: 2px 8px; border-radius: 999px; background: rgba(255,204,51,0.15); color: #FFCC33; }
 
     .form-card {
       max-width: 420px; margin: 0 auto; background: rgba(255,255,255,0.05);
@@ -57,47 +44,30 @@
     }
     .form-card label { display: block; font-size: 0.85rem; margin-top: 10px; }
     .form-card input, .form-card textarea {
-      width: 100%; padding: 9px; margin-top: 4px; border-radius: 8px;
-      border: none; font-size: 0.9rem;
+      width: 100%; padding: 9px; margin-top: 4px; border-radius: 8px; border: none; font-size: 0.9rem;
     }
 
-    .btn {
-      background: #D91E18; color: #fff; border: none;
-      border-radius: 999px; padding: 8px 16px; font-size: 0.85rem; cursor: pointer;
-    }
-    .btn-outline {
-      background: none; border: 1px solid #FFCC33;
-      color: #FFCC33; border-radius: 999px; padding: 8px 16px;
-      font-size: 0.85rem; cursor: pointer;
-    }
+    .btn { background: #D91E18; color: #fff; border: none; border-radius: 999px; padding: 8px 16px; font-size: 0.85rem; cursor: pointer; }
+    .btn-outline { background: none; border: 1px solid #FFCC33; color: #FFCC33; border-radius: 999px; padding: 8px 16px; font-size: 0.85rem; cursor: pointer; }
 
-    .artist-detail-header {
-      display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px;
-    }
-    .artist-detail-header img {
-      width: 96px; height: 96px; border-radius: 50%; object-fit: cover;
-    }
+    .artist-detail-header { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+    .artist-detail-header img { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; }
 
     .song-item {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 8px 10px; border-radius: 8px;
-      background: rgba(255,255,255,0.05); margin-bottom: 6px;
+      padding: 8px 10px; border-radius: 8px; background: rgba(255,255,255,0.05); margin-bottom: 6px;
     }
 
     .player-bar {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      background: rgba(0,0,0,0.9); height: 80px;
-      display: flex; align-items: center; padding: 8px 16px; gap: 16px;
+      position: fixed; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.9);
+      height: 80px; display: flex; align-items: center; padding: 8px 16px; gap: 16px;
     }
     .player-info { display: flex; align-items: center; gap: 10px; }
-    .player-info img {
-      width: 56px; height: 56px; border-radius: 8px;
-      object-fit: cover; background: #222;
-    }
+    .player-info img { width: 56px; height: 56px; border-radius: 8px; object-fit: cover; background: #222; }
 
     .player-controls button {
-      width: 32px; height: 32px; border-radius: 50%;
-      border: 1px solid #555; background: none; color: white; cursor: pointer;
+      width: 32px; height: 32px; border-radius: 50%; border: 1px solid #555;
+      background: none; color: white; cursor: pointer;
     }
 
     .player-extra { flex: 1; display: flex; gap: 8px; }
@@ -106,16 +76,18 @@
       from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    /* small responsive tweaks */
+    @media (max-width:600px) {
+      .artist-detail-header { flex-direction: column; align-items: center; text-align: center; }
+      .player-extra { display: none; }
+    }
   </style>
 </head>
 
 <body>
-
 <header>
-  <div class="logo">
-    <span class="logo-icon">🕊️</span>
-    Kiribati Music Hub
-  </div>
+  <div class="logo"><span class="logo-icon">🕊️</span> Kiribati Music Hub</div>
   <nav>
     <a href="#" data-view="home" class="nav-link active">Home</a>
     <a href="#" data-view="artists" class="nav-link">Artists</a>
@@ -149,78 +121,67 @@
   <audio id="audioElement"></audio>
 </div>
 
-<script>
-  // STATE
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import {
+    getAuth,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut,
+    onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import {
+    getFirestore,
+    collection,
+    getDocs,
+    doc,
+    getDoc,
+    setDoc,
+    updateDoc
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import {
+    getStorage,
+    ref,
+    uploadBytes,
+    getDownloadURL
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB9Qfi9e-sSNE_qzCXfNyIuOddfOE3HIkA",
+    authDomain: "kiribati-music-hub-57038.firebaseapp.com",
+    projectId: "kiribati-music-hub-57038",
+    storageBucket: "kiribati-music-hub-57038.firebasestorage.app",
+    messagingSenderId: "673236054608",
+    appId: "1:673236054608:web:0aee43fd20699df2d91755",
+    measurementId: "G-7BFNK4Q0RX"
+  };
+
+  const appFirebase = initializeApp(firebaseConfig);
+  const auth = getAuth(appFirebase);
+  const db = getFirestore(appFirebase);
+  const storage = getStorage(appFirebase);
+
   const app = document.getElementById("app");
   const navLinks = document.querySelectorAll(".nav-link");
 
   let currentView = "home";
   let currentArtist = null;
   let currentUser = null;
+  let artists = [];
 
-  // LOCAL ARTIST DATABASE
-  let artists = [
-    {
-      id: 1,
-      name: "Te Kairi - Choir",
-      island: "Kiribati",
-      avatar: "https://i.ibb.co/nspJJ1QH/island-choir.png",
-      bio: "Traditional Kiribati rhythms - island Harmony .",
-      genres: ["Island Classic"],
-      songs: [
-        {
-          title: "Tamau oh",
-          url: "https://TioteeRibabaiti.publit.io/file/Tamau-I-ongo-bwanaia.mp3",
-          cover: "https://i.ibb.co/nspJJ1QH/island-choir.png"
-        }
-      ]
-    },
-    {
-      id: 2,
-      name: "Te Kairi - Choir ",
-      island: "Kiribati",
-      avatar: "https://i.ibb.co/DfcT7kdD/Election-Day.png",
-      bio: "Choral harmonies echoing the maneaba gatherings.",
-      genres: ["Choral", "Traditional"],
-      songs: [
-        {
-          title: "Urake arokau",
-          url: "https://TioteeRibabaiti.publit.io/file/Urake-arokau-te-kimatore.mp3",
-          cover: "https://i.ibb.co/DfcT7kdD/Election-Day.png"
-        }
-      ]
-    },
-    {
-      id: 3,
-      name: "Tekimatore - Nei Tabotai Tom",
-      island: "Buariki, North Tarawa",
-      avatar: "https://i.ibb.co/kW7Lq3J/Nei-Tabotai.png",
-      bio: "Ambient ocean sounds mixed with gentle guitar and ukulele.",
-      genres: ["Ambient", "Acoustic"],
-      songs: [
-        {
-          title: "Tangirana ma uringana",
-          url: "https://TioteeRibabaiti.publit.io/file/Tangirana-ma-uringana.mp3",
-          cover: "https://i.ibb.co/nsPNqFKZ/Tekimatore-cover.png"
-        }
-      ]
-    }
-  ];
+  function setActiveNav(view) {
+    navLinks.forEach(l => l.classList.toggle("active", l.dataset.view === view));
+  }
 
-  // LOCAL ACCOUNTS
-  let accounts = []; // { email, password, artistId }
-
-  // NAVIGATION
   navLinks.forEach(link => {
     link.addEventListener("click", e => {
       e.preventDefault();
       currentView = link.dataset.view;
-      navLinks.forEach(l => l.classList.toggle("active", l === link));
+      setActiveNav(currentView);
       render();
     });
   });
 
-  // ROUTER
   function render() {
     if (currentView === "home") return renderHome();
     if (currentView === "artists") return renderArtists();
@@ -230,20 +191,15 @@
     if (currentView === "dashboard") return renderDashboard();
   }
 
-  // HOME
   function renderHome() {
     app.innerHTML = `
       <h1 class="section-title">Welcome to Kiribati Music Hub</h1>
-      <p class="section-subtitle">
-        A lightweight prototype of your iKiribati music platform — with local artist sign up and login.
-      </p>
-
+      <p class="section-subtitle">A Firebase-powered music platform for iKiribati artists.</p>
       <p style="margin-top:12px;font-size:0.9rem;">
         🕊️ Frigate bird for freedom & culture<br>
         🌊 Ocean waves for connection across islands<br>
         🎵 Music as the heartbeat of Kiribati
       </p>
-
       <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;">
         <button class="btn" onclick="setView('artists')">Browse Artists</button>
         <button class="btn-outline" onclick="setView('login')">Artist Login / Sign Up</button>
@@ -251,58 +207,56 @@
     `;
   }
 
-  // ARTISTS LIST
-  function renderArtists() {
+  async function loadArtists() {
+    const snap = await getDocs(collection(db, "artists"));
+    artists = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  }
+
+  async function renderArtists() {
+    await loadArtists();
     app.innerHTML = `
       <h1 class="section-title">Artists</h1>
-      <p class="section-subtitle">Sample iKiribati-inspired artists (local data only).</p>
-
+      <p class="section-subtitle">Discover iKiribati musicians.</p>
       <div class="artist-grid">
         ${artists.map(a => `
-          <article class="artist-card" onclick="openArtist(${a.id})">
-            <img src="${a.avatar}" class="artist-avatar" />
+          <article class="artist-card" onclick="openArtist('${a.id}')">
+            <img src="${a.avatar || 'https://via.placeholder.com/150'}" class="artist-avatar" />
             <div class="artist-name">${a.name}</div>
             <div class="artist-island">🌴 ${a.island}</div>
-            <span class="tag">${a.genres.join(", ")}</span>
+            <span class="tag">${(a.genres || []).join(", ")}</span>
           </article>
         `).join("")}
       </div>
     `;
   }
 
-  window.openArtist = function(id) {
-    currentArtist = artists.find(a => a.id === id);
+  window.openArtist = async function(id) {
+    const snap = await getDoc(doc(db, "artists", id));
+    currentArtist = { id, ...snap.data() };
     currentView = "artistDetail";
+    setActiveNav("artists");
     render();
   };
 
-  // ARTIST DETAIL
   function renderArtistDetail() {
     if (!currentArtist) {
       app.innerHTML = `<p>No artist selected.</p>`;
       return;
     }
-
     const a = currentArtist;
     const songs = a.songs || [];
-
     app.innerHTML = `
       <button class="btn-outline" onclick="setView('artists')">← Back</button>
-
       <div class="artist-detail-header" style="margin-top:12px;">
-        <img src="${a.avatar}" />
+        <img src="${a.avatar || 'https://via.placeholder.com/150'}" />
         <div>
           <h2>${a.name}</h2>
           <p style="font-size:0.9rem;opacity:0.8;">🌴 ${a.island}</p>
           <p style="margin-top:6px;">${a.bio}</p>
-          <p style="margin-top:6px;font-size:0.8rem;opacity:0.8;">
-            Genres: ${a.genres.join(", ")}
-          </p>
+          <p style="margin-top:6px;font-size:0.8rem;opacity:0.8;">Genres: ${(a.genres || []).join(", ")}</p>
         </div>
       </div>
-
       <h3 class="section-title" style="font-size:1.2rem;">Songs</h3>
-
       ${songs.length === 0 ? `<p>No songs yet.</p>` : songs.map((s,i)=>`
         <div class="song-item">
           <div>
@@ -315,117 +269,94 @@
     `;
   }
 
-  // ABOUT
   function renderAbout() {
     app.innerHTML = `
       <h1 class="section-title">About</h1>
-      <p class="section-subtitle">
-        This is a lightweight, offline prototype of Kiribati Music Hub — no database, no backend, just front-end logic.
-      </p>
-      <p style="font-size:0.9rem;">
-        Later, we will rebuild this with Firebase for real accounts, uploads, and admin approval.
-      </p>
+      <p class="section-subtitle">This is a Firebase-powered prototype of Kiribati Music Hub.</p>
+      <p style="font-size:0.9rem;">Artists can sign up, edit profiles, upload songs, and share their music.</p>
     `;
   }
 
-  // LOGIN / SIGNUP
   function renderLogin() {
     app.innerHTML = `
       <h1 class="section-title">Artist Login / Sign Up</h1>
-      <p class="section-subtitle">Local-only accounts (data resets when you refresh).</p>
-
+      <p class="section-subtitle">Create an account to upload your music.</p>
       <div class="form-card">
         <label>Email</label>
         <input type="email" id="authEmail" />
-
         <label>Password</label>
         <input type="password" id="authPassword" />
-
         <button class="btn" onclick="doLogin()">Login</button>
         <button class="btn-outline" onclick="doSignup()">Sign Up</button>
       </div>
     `;
   }
 
-  window.doSignup = function() {
-    const email = document.getElementById("authEmail").value.trim();
-    const password = document.getElementById("authPassword").value.trim();
-
-    if (!email || !password) {
-      alert("Enter email and password.");
-      return;
+  window.doSignup = async function() {
+    const email = document.getElementById("authEmail").value;
+    const password = document.getElementById("authPassword").value;
+    if (!email || !password) return alert("Enter email and password.");
+    try {
+      const userCred = await createUserWithEmailAndPassword(auth, email, password);
+      const uid = userCred.user.uid;
+      await setDoc(doc(db, "artists", uid), {
+        name: email.split("@")[0],
+        island: "Kiribati",
+        bio: "New iKiribati artist.",
+        avatar: "",
+        genres: ["Island"],
+        songs: []
+      });
+      currentUser = { uid, email };
+      currentView = "dashboard";
+      setActiveNav("login");
+      render();
+    } catch (err) {
+      alert(err.message);
     }
-
-    if (accounts.find(a => a.email === email)) {
-      alert("Account already exists.");
-      return;
-    }
-
-    const newArtist = {
-      id: Date.now(),
-      name: email.split("@")[0],
-      island: "Kiribati",
-      avatar: "https://via.placeholder.com/150/ffcc33/000000?text=New+Artist",
-      bio: "New iKiribati artist.",
-      genres: ["Island"],
-      songs: []
-    };
-
-    artists.push(newArtist);
-    accounts.push({ email, password, artistId: newArtist.id });
-
-    currentUser = { email, artistId: newArtist.id };
-    alert("Account created (local only).");
-
-    currentView = "dashboard";
-    render();
   };
 
-  window.doLogin = function() {
-    const email = document.getElementById("authEmail").value.trim();
-    const password = document.getElementById("authPassword").value.trim();
-
-    const acc = accounts.find(a => a.email === email && a.password === password);
-    if (!acc) {
-      alert("Invalid email or password.");
-      return;
+  window.doLogin = async function() {
+    const email = document.getElementById("authEmail").value;
+    const password = document.getElementById("authPassword").value;
+    if (!email || !password) return alert("Enter email and password.");
+    try {
+      const userCred = await signInWithEmailAndPassword(auth, email, password);
+      currentUser = { uid: userCred.user.uid, email };
+      currentView = "dashboard";
+      setActiveNav("login");
+      render();
+    } catch (err) {
+      alert("Invalid login");
     }
-
-    currentUser = { email, artistId: acc.artistId };
-    alert("Logged in (local only).");
-
-    currentView = "dashboard";
-    render();
   };
 
-  window.doLogout = function() {
+  window.doLogout = async function() {
+    try {
+      await signOut(auth);
+    } catch (e) { /* ignore */ }
     currentUser = null;
-    alert("Logged out.");
     currentView = "home";
+    setActiveNav("home");
     render();
   };
 
-  // DASHBOARD
-  function renderDashboard() {
+  async function renderDashboard() {
     if (!currentUser) {
       app.innerHTML = `<p>You must be logged in.</p>`;
       return;
     }
-
-    const artist = artists.find(a => a.id === currentUser.artistId);
+    const snap = await getDoc(doc(db, "artists", currentUser.uid));
+    const artist = snap.exists() ? snap.data() : null;
     if (!artist) {
       app.innerHTML = `<p>Artist profile not found.</p>`;
       return;
     }
-
     const songs = artist.songs || [];
-
     app.innerHTML = `
       <h1 class="section-title">Artist Dashboard</h1>
-      <p class="section-subtitle">Logged in as ${currentUser.email} (local only).</p>
-
+      <p class="section-subtitle">Logged in as ${currentUser.email}</p>
       <button class="btn-outline" onclick="doLogout()">Logout</button>
-
       <h3 style="margin-top:20px;">Profile</h3>
       <div class="form-card" style="background:none;border:none;padding:0;">
         <label>Name</label>
@@ -436,56 +367,62 @@
         <textarea id="pBio">${artist.bio}</textarea>
         <label>Avatar URL</label>
         <input id="pAvatar" value="${artist.avatar}">
-        <button class="btn" style="margin-top:12px;" onclick="saveProfile(${artist.id})">Save Profile</button>
+        <button class="btn" onclick="saveProfile()">Save Profile</button>
       </div>
-
       <h3 style="margin-top:20px;">Songs</h3>
       ${songs.length === 0 ? `<p>No songs yet.</p>` : songs.map(s => `
         <div class="song-item">
           <div>
             <div>${s.title}</div>
-            <small>${s.url}</small>
+            <small style="opacity:0.7;">${s.url}</small>
           </div>
         </div>
       `).join("")}
-
-      <h3 style="margin-top:20px;">Add Song (URL only)</h3>
+      <h3 style="margin-top:20px;">Add Song</h3>
       <div class="form-card" style="background:none;border:none;padding:0;">
         <label>Song Title</label>
         <input id="uTitle">
-        <label>Audio URL</label>
-        <input id="uUrl">
-        <button class="btn" style="margin-top:12px;" onclick="addSong(${artist.id})">Add Song</button>
+        <label>Upload MP3</label>
+        <input type="file" id="songFile" accept="audio/*" />
+        <button class="btn" onclick="addSong()">Upload Song</button>
       </div>
     `;
   }
 
-  window.saveProfile = function(id) {
-    const artist = artists.find(a => a.id === id);
-    if (!artist) return;
-    artist.name = document.getElementById("pName").value;
-    artist.island = document.getElementById("pIsland").value;
-    artist.bio = document.getElementById("pBio").value;
-    artist.avatar = document.getElementById("pAvatar").value;
-    alert("Profile updated.");
+  window.saveProfile = async function() {
+    if (!currentUser) return alert("Not logged in.");
+    const refDoc = doc(db, "artists", currentUser.uid);
+    await updateDoc(refDoc, {
+      name: document.getElementById("pName").value,
+      island: document.getElementById("pIsland").value,
+      bio: document.getElementById("pBio").value,
+      avatar: document.getElementById("pAvatar").value
+    });
+    alert("Profile updated!");
     render();
   };
 
-  window.addSong = function(id) {
-    const artist = artists.find(a => a.id === id);
-    if (!artist) return;
+  window.addSong = async function() {
+    if (!currentUser) return alert("Not logged in.");
+    const fileInput = document.getElementById("songFile");
+    const file = fileInput && fileInput.files && fileInput.files[0];
     const title = document.getElementById("uTitle").value.trim();
-    const url = document.getElementById("uUrl").value.trim();
-    if (!title || !url) {
-      alert("Enter title and URL.");
-      return;
-    }
-    artist.songs.push({ title, url, cover: artist.avatar });
-    alert("Song added.");
+    if (!file) return alert("Choose a file.");
+    if (!title) return alert("Enter a title.");
+    const storageRef = ref(storage, `songs/${currentUser.uid}/${Date.now()}_${file.name}`);
+    await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(storageRef);
+    const artistRef = doc(db, "artists", currentUser.uid);
+    const snap = await getDoc(artistRef);
+    const artist = snap.data() || { songs: [] };
+    const newSong = { title, url, cover: artist.avatar || "" };
+    await updateDoc(artistRef, {
+      songs: [...(artist.songs || []), newSong]
+    });
+    alert("Song uploaded!");
     render();
   };
 
-  // PLAYER
   const audio = document.getElementById("audioElement");
   const playerTitle = document.getElementById("playerTitle");
   const playerArtist = document.getElementById("playerArtist");
@@ -500,7 +437,6 @@
   let currentTrackIndex = -1;
 
   window.playSong = function(index) {
-    if (!currentArtist) return;
     currentPlaylist = currentArtist.songs || [];
     currentTrackIndex = index;
     loadTrack(true);
@@ -512,7 +448,7 @@
     audio.src = track.url;
     playerTitle.textContent = track.title;
     playerArtist.textContent = currentArtist.name;
-    playerCover.src = track.cover || currentArtist.avatar;
+    playerCover.src = track.cover || currentArtist.avatar || "";
     if (autoplay) audio.play();
     updatePlayPauseButton();
   }
@@ -559,16 +495,22 @@
     loadTrack(true);
   });
 
-  // HELPER
   window.setView = function(v) {
     currentView = v;
-    navLinks.forEach(l => l.classList.toggle("active", l.dataset.view === v));
+    setActiveNav(v);
     render();
   };
 
-  // INITIAL RENDER
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      currentUser = { uid: user.uid, email: user.email };
+    } else {
+      currentUser = null;
+    }
+  });
+
   render();
 </script>
-
 </body>
 </html>
+
