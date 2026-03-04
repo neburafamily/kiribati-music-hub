@@ -6,33 +6,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
-    body { background: linear-gradient(to bottom, #003366, #02101f); color: #fff; padding-bottom: 90px; }
+    body { background: radial-gradient(circle at top, #005b96 0, #02101f 45%, #000 100%); color: #fff; padding-bottom: 120px; }
 
     header {
       display: flex; justify-content: space-between; align-items: center;
       padding: 16px 24px; background: rgba(0,0,0,0.7);
-      position: sticky; top: 0; z-index: 10; backdrop-filter: blur(8px);
+      position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
     }
 
     .logo { font-weight: 800; color: #FFCC33; text-transform: uppercase; letter-spacing: 0.08em; display: flex; align-items: center; gap: 6px; }
     .logo-icon { font-size: 1.3rem; }
 
-    nav a { margin-left: 16px; color: #fff; text-decoration: none; border-bottom: 2px solid transparent; font-size: 0.9rem; }
+    nav a { margin-left: 16px; color: #fff; text-decoration: none; border-bottom: 2px solid transparent; font-size: 0.9rem; padding-bottom: 2px; }
     nav a.active, nav a:hover { border-bottom-color: #FFCC33; }
 
     #app { padding: 24px; max-width: 1000px; margin: 0 auto; }
-    .section-title { font-size: 1.7rem; margin-bottom: 8px; }
+    .section-title { font-size: 1.8rem; margin-bottom: 8px; }
     .section-subtitle { opacity: 0.85; margin-bottom: 20px; }
 
     .artist-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 16px; }
     .artist-card {
-      background: rgba(255,255,255,0.05); padding: 16px; border-radius: 12px;
-      cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease;
+      background: radial-gradient(circle at top left, rgba(255,204,51,0.12), rgba(0,0,0,0.7));
+      padding: 16px; border-radius: 16px;
+      cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease, border 0.2s ease;
       border: 1px solid rgba(255,255,255,0.08); animation: floatIn 0.4s ease;
     }
-    .artist-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+    .artist-card:hover { transform: translateY(-4px); box-shadow: 0 14px 30px rgba(0,0,0,0.6); border-color: rgba(255,204,51,0.6); }
 
-    .artist-avatar { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; margin-bottom: 8px; }
+    .artist-avatar { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; margin-bottom: 8px; border: 2px solid rgba(255,255,255,0.2); }
     .artist-name { font-weight: 600; }
     .artist-island { font-size: 0.8rem; opacity: 0.8; margin-bottom: 6px; }
     .tag { display: inline-block; font-size: 0.7rem; padding: 2px 8px; border-radius: 999px; background: rgba(255,204,51,0.15); color: #FFCC33; }
@@ -47,40 +49,94 @@
       width: 100%; padding: 9px; margin-top: 4px; border-radius: 8px; border: none; font-size: 0.9rem;
     }
 
-    .btn { background: #D91E18; color: #fff; border: none; border-radius: 999px; padding: 8px 16px; font-size: 0.85rem; cursor: pointer; }
+    .btn { background: linear-gradient(135deg,#ff5f6d,#ffc371); color: #000; border: none; border-radius: 999px; padding: 8px 16px; font-size: 0.85rem; cursor: pointer; font-weight: 600; }
     .btn-outline { background: none; border: 1px solid #FFCC33; color: #FFCC33; border-radius: 999px; padding: 8px 16px; font-size: 0.85rem; cursor: pointer; }
 
-    .artist-detail-header { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
-    .artist-detail-header img { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; }
+    .artist-detail-header { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; }
+    .artist-detail-header img { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255,255,255,0.3); }
 
     .song-item {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 8px 10px; border-radius: 8px; background: rgba(255,255,255,0.05); margin-bottom: 6px;
+      padding: 8px 10px; border-radius: 10px; background: rgba(255,255,255,0.05); margin-bottom: 6px;
+    }
+
+    /* Floating animated music player */
+    .player-wrapper {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 50;
+      animation: floatPlayer 4s ease-in-out infinite;
     }
 
     .player-bar {
-      position: fixed; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.9);
-      height: 80px; display: flex; align-items: center; padding: 8px 16px; gap: 16px;
+      background: radial-gradient(circle at top left, rgba(255,204,51,0.25), rgba(0,0,0,0.95));
+      border-radius: 18px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.7);
+      border: 1px solid rgba(255,255,255,0.12);
+      min-width: 260px;
+      max-width: 360px;
     }
-    .player-info { display: flex; align-items: center; gap: 10px; }
-    .player-info img { width: 56px; height: 56px; border-radius: 8px; object-fit: cover; background: #222; }
 
+    .player-info { display: flex; align-items: center; gap: 10px; flex: 1; }
+    .player-info img { width: 52px; height: 52px; border-radius: 12px; object-fit: cover; background: #222; border: 2px solid rgba(255,255,255,0.3); }
+
+    .player-text-main { font-size: 0.9rem; font-weight: 600; }
+    .player-text-sub { font-size: 0.75rem; opacity: 0.8; }
+
+    .player-controls { display: flex; flex-direction: column; align-items: center; gap: 4px; }
     .player-controls button {
-      width: 32px; height: 32px; border-radius: 50%; border: 1px solid #555;
-      background: none; color: white; cursor: pointer;
+      width: 28px; height: 28px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.4);
+      background: rgba(0,0,0,0.4); color: white; cursor: pointer; font-size: 0.8rem;
+      display: flex; align-items: center; justify-content: center;
     }
 
-    .player-extra { flex: 1; display: flex; gap: 8px; }
+    .player-wave {
+      display: flex; align-items: flex-end; gap: 2px; height: 18px; margin-top: 4px;
+    }
+    .player-wave span {
+      width: 3px; border-radius: 999px; background: rgba(255,255,255,0.5);
+      animation: wave 1s ease-in-out infinite;
+    }
+    .player-wave span:nth-child(2) { animation-delay: 0.1s; }
+    .player-wave span:nth-child(3) { animation-delay: 0.2s; }
+    .player-wave span:nth-child(4) { animation-delay: 0.3s; }
+    .player-wave span:nth-child(5) { animation-delay: 0.4s; }
+
+    .player-slider {
+      width: 100%;
+      margin-top: 4px;
+    }
+    .player-slider input[type="range"] {
+      width: 100%;
+    }
+
+    audio { display: none; }
 
     @keyframes floatIn {
       from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* small responsive tweaks */
-    @media (max-width:600px) {
-      .artist-detail-header { flex-direction: column; align-items: center; text-align: center; }
-      .player-extra { display: none; }
+    @keyframes floatPlayer {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+      100% { transform: translateY(0); }
+    }
+
+    @keyframes wave {
+      0%,100% { height: 4px; }
+      50% { height: 16px; }
+    }
+
+    @media (max-width: 600px) {
+      .artist-detail-header { flex-direction: column; text-align: center; }
+      .player-wrapper { left: 50%; right: auto; transform: translateX(-50%); bottom: 12px; }
+      .player-bar { width: calc(100vw - 32px); max-width: none; }
     }
   </style>
 </head>
@@ -98,26 +154,28 @@
 
 <main id="app"></main>
 
-<div class="player-bar">
-  <div class="player-info">
-    <img id="playerCover" src="" />
-    <div>
-      <div id="playerTitle">No track selected</div>
-      <div id="playerArtist"></div>
+<div class="player-wrapper">
+  <div class="player-bar">
+    <div class="player-info">
+      <img id="playerCover" src="" alt="Cover" />
+      <div>
+        <div id="playerTitle" class="player-text-main">No track selected</div>
+        <div id="playerArtist" class="player-text-sub"></div>
+        <div class="player-wave" id="playerWave">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+    <div class="player-controls">
+      <button id="prevBtn">⏮</button>
+      <button id="playPauseBtn">▶</button>
+      <button id="nextBtn">⏭</button>
     </div>
   </div>
-
-  <div class="player-controls">
-    <button id="prevBtn">⏮</button>
-    <button id="playPauseBtn">▶</button>
-    <button id="nextBtn">⏭</button>
-  </div>
-
-  <div class="player-extra">
+  <div class="player-slider">
     <input type="range" id="seekBar" min="0" max="100" />
     <input type="range" id="volumeBar" min="0" max="1" step="0.01" value="0.8" />
   </div>
-
   <audio id="audioElement"></audio>
 </div>
 
@@ -150,7 +208,7 @@
     apiKey: "AIzaSyB9Qfi9e-sSNE_qzCXfNyIuOddfOE3HIkA",
     authDomain: "kiribati-music-hub-57038.firebaseapp.com",
     projectId: "kiribati-music-hub-57038",
-    storageBucket: "kiribati-music-hub-57038.firebasestorage.app",
+    storageBucket: "kiribati-music-hub-57038.appspot.com",
     messagingSenderId: "673236054608",
     appId: "1:673236054608:web:0aee43fd20699df2d91755",
     measurementId: "G-7BFNK4Q0RX"
@@ -332,9 +390,7 @@
   };
 
   window.doLogout = async function() {
-    try {
-      await signOut(auth);
-    } catch (e) { /* ignore */ }
+    try { await signOut(auth); } catch (e) {}
     currentUser = null;
     currentView = "home";
     setActiveNav("home");
@@ -432,6 +488,7 @@
   const nextBtn = document.getElementById("nextBtn");
   const seekBar = document.getElementById("seekBar");
   const volumeBar = document.getElementById("volumeBar");
+  const playerWave = document.getElementById("playerWave");
 
   let currentPlaylist = [];
   let currentTrackIndex = -1;
@@ -451,10 +508,20 @@
     playerCover.src = track.cover || currentArtist.avatar || "";
     if (autoplay) audio.play();
     updatePlayPauseButton();
+    setWaveActive(true);
   }
 
   function updatePlayPauseButton() {
     playPauseBtn.textContent = audio.paused ? "▶" : "⏸";
+    setWaveActive(!audio.paused && !!audio.src);
+  }
+
+  function setWaveActive(active) {
+    playerWave.style.opacity = active ? "1" : "0.3";
+    playerWave.style.animationPlayState = active ? "running" : "paused";
+    [...playerWave.children].forEach(span => {
+      span.style.animationPlayState = active ? "running" : "paused";
+    });
   }
 
   playPauseBtn.addEventListener("click", () => {
