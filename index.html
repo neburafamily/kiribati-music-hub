@@ -60,6 +60,35 @@
       padding: 8px 10px; border-radius: 10px; background: rgba(255,255,255,0.05); margin-bottom: 6px;
     }
 
+    /* Drop zone + progress */
+    .drop-zone {
+      border: 2px dashed rgba(255,255,255,0.4);
+      border-radius: 12px;
+      padding: 18px;
+      text-align: center;
+      cursor: pointer;
+      margin-top: 6px;
+      background: rgba(255,255,255,0.03);
+    }
+    .drop-zone.dragover {
+      border-color: #FFCC33;
+      background: rgba(255,204,51,0.08);
+    }
+    .upload-progress {
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.1);
+      margin: 10px 0;
+      overflow: hidden;
+    }
+    .upload-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg,#ff5f6d,#ffc371);
+      transition: width 0.15s linear;
+    }
+
     /* Floating animated music player */
     .player-wrapper {
       position: fixed;
@@ -97,10 +126,12 @@
 
     .player-wave {
       display: flex; align-items: flex-end; gap: 2px; height: 18px; margin-top: 4px;
+      opacity: 0.3;
     }
     .player-wave span {
       width: 3px; border-radius: 999px; background: rgba(255,255,255,0.5);
       animation: wave 1s ease-in-out infinite;
+      animation-play-state: paused;
     }
     .player-wave span:nth-child(2) { animation-delay: 0.1s; }
     .player-wave span:nth-child(3) { animation-delay: 0.2s; }
@@ -201,7 +232,8 @@
     getStorage,
     ref,
     uploadBytes,
-    getDownloadURL
+    getDownloadURL,
+    uploadBytesResumable
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
   const firebaseConfig = {
@@ -226,6 +258,7 @@
   let currentArtist = null;
   let currentUser = null;
   let artists = [];
+  let userPlaylist = [];
 
   function setActiveNav(view) {
     navLinks.forEach(l => l.classList.toggle("active", l.dataset.view === view));
@@ -262,7 +295,9 @@
         <button class="btn" onclick="setView('artists')">Browse Artists</button>
         <button class="btn-outline" onclick="setView('login')">Artist Login / Sign Up</button>
       </div>
+      <div id="playlistPreview" style="margin-top:24px;"></div>
     `;
+    renderPlaylistPreview();
   }
 
   async function loadArtists() {
@@ -319,9 +354,12 @@
         <div class="song-item">
           <div>
             <div>${s.title}</div>
-            <small style="opacity:0.7;">${a.name}</small>
+            <small style="opacity:0.7;">${a.name}${s.album ? " • " + s.album : ""}</small>
           </div>
-          <button class="btn" onclick="playSong(${i})">Play</button>
+          <div style="display:flex;gap:6px;">
+            <button class="btn" onclick="playSong(${i})">Play</button>
+            <button class="btn-outline" onclick="addToPlaylist('${a.id}', ${i})">＋</button>
+          </div>
         </div>
       `).join("")}
     `;
@@ -430,19 +468,65 @@
         <div class="song-item">
           <div>
             <div>${s.title}</div>
-            <small style="opacity:0.7;">${s.url}</small>
+            <small style="opacity:0.7;">${s.album ? s.album + " • " : ""}${s.url}</small>
           </div>
         </div>
       `).join("")}
       <h3 style="margin-top:20px;">Add Song</h3>
       <div class="form-card" style="background:none;border:none;padding:0;">
+        <label>Album (optional)</label>
+        <input id="uAlbum" placeholder="Album name">
         <label>Song Title</label>
-        <input id="uTitle">
+        <input id="uTitle" placeholder="Song title">
+        <label>Cover Image (optional)</label>
+        <input type="file" id="coverFile" accept="image/*" />
         <label>Upload MP3</label>
-        <input type="file" id="songFile" accept="audio/*" />
+        <div id="dropZone" class="drop-zone">
+          <p id="dropZoneText">Drop MP3 here or click to choose</p>
+          <input type="file" id="songFile" accept="audio/*" style="display:none;" />
+        </div>
+        <div class="upload-progress">
+          <div id="uploadBar" class="upload-bar"></div>
+        </div>
         <button class="btn" onclick="addSong()">Upload Song</button>
       </div>
     `;
+    initDropZone();
+  }
+
+  function initDropZone() {
+    const dropZone = document.getElementById("dropZone");
+    const fileInput = document.getElementById("songFile");
+    const text = document.getElementById("dropZoneText");
+    if (!dropZone || !fileInput) return;
+
+    dropZone.addEventListener("click", () => fileInput.click());
+
+    dropZone.addEventListener("dragover", e => {
+      e.preventDefault();
+      dropZone.classList.add("dragover");
+    });
+
+    dropZone.addEventListener("dragleave", () => {
+      dropZone.classList.remove("dragover");
+    });
+
+    dropZone.addEventListener("drop", e => {
+      e.preventDefault();
+      dropZone.classList.remove("dragover");
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith("audio/")) {
+        fileInput.files = e.dataTransfer.files;
+        text.textContent = `Selected: ${file.name}`;
+      } else {
+        alert("Please drop an audio file (MP3).");
+      }
+    });
+
+    fileInput.addEventListener("change", () => {
+      const file = fileInput.files[0];
+      if (file) text.textContent = `Selected: ${file.name}`;
+    });
   }
 
   window.saveProfile = async function() {
@@ -460,23 +544,64 @@
 
   window.addSong = async function() {
     if (!currentUser) return alert("Not logged in.");
-    const fileInput = document.getElementById("songFile");
-    const file = fileInput && fileInput.files && fileInput.files[0];
+
     const title = document.getElementById("uTitle").value.trim();
-    if (!file) return alert("Choose a file.");
+    const album = document.getElementById("uAlbum").value.trim();
+    const songInput = document.getElementById("songFile");
+    const coverInput = document.getElementById("coverFile");
+    const uploadBar = document.getElementById("uploadBar");
+
+    const songFile = songInput && songInput.files && songInput.files[0];
+    const coverFile = coverInput && coverInput.files && coverInput.files[0];
+
+    if (!songFile) return alert("Choose or drop an MP3 file.");
     if (!title) return alert("Enter a title.");
-    const storageRef = ref(storage, `songs/${currentUser.uid}/${Date.now()}_${file.name}`);
-    await uploadBytes(storageRef, file);
-    const url = await getDownloadURL(storageRef);
-    const artistRef = doc(db, "artists", currentUser.uid);
-    const snap = await getDoc(artistRef);
-    const artist = snap.data() || { songs: [] };
-    const newSong = { title, url, cover: artist.avatar || "" };
-    await updateDoc(artistRef, {
-      songs: [...(artist.songs || []), newSong]
-    });
-    alert("Song uploaded!");
-    render();
+
+    uploadBar.style.width = "0%";
+
+    let coverUrl = "";
+    if (coverFile) {
+      const coverRef = ref(storage, `covers/${currentUser.uid}/${Date.now()}_${coverFile.name}`);
+      await uploadBytes(coverRef, coverFile);
+      coverUrl = await getDownloadURL(coverRef);
+    }
+
+    const songRef = ref(storage, `songs/${currentUser.uid}/${Date.now()}_${songFile.name}`);
+    const uploadTask = uploadBytesResumable(songRef, songFile);
+
+    uploadTask.on("state_changed",
+      snapshot => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        uploadBar.style.width = progress + "%";
+      },
+      error => {
+        console.error(error);
+        alert("Upload failed.");
+      },
+      async () => {
+        const url = await getDownloadURL(uploadTask.snapshot.ref);
+
+        const artistRef = doc(db, "artists", currentUser.uid);
+        const snap = await getDoc(artistRef);
+        const artist = snap.data() || { songs: [] };
+
+        const newSong = {
+          title,
+          url,
+          cover: coverUrl || artist.avatar || "",
+          album: album || "",
+          createdAt: Date.now()
+        };
+
+        await updateDoc(artistRef, {
+          songs: [...(artist.songs || []), newSong]
+        });
+
+        alert("Song uploaded!");
+        uploadBar.style.width = "0%";
+        render();
+      }
+    );
   };
 
   const audio = document.getElementById("audioElement");
@@ -499,12 +624,56 @@
     loadTrack(true);
   };
 
+  window.addToPlaylist = function(artistId, songIndex) {
+    const artist = artists.find(a => a.id === artistId) || currentArtist;
+    if (!artist) return;
+    const song = (artist.songs || [])[songIndex];
+    if (!song) return;
+    userPlaylist.push({ artistId, artistName: artist.name, ...song });
+    renderPlaylistPreview();
+  };
+
+  function renderPlaylistPreview() {
+    const el = document.getElementById("playlistPreview");
+    if (!el) return;
+    if (!userPlaylist.length) {
+      el.innerHTML = `<p style="font-size:0.85rem;opacity:0.7;">No songs in playlist yet.</p>`;
+      return;
+    }
+    el.innerHTML = `
+      <h3 style="font-size:1rem;margin-bottom:6px;">My Playlist</h3>
+      ${userPlaylist.map((s,i)=>`
+        <div class="song-item">
+          <div>
+            <div>${s.title}</div>
+            <small style="opacity:0.7;">${s.artistName}${s.album ? " • " + s.album : ""}</small>
+          </div>
+          <button class="btn" onclick="playPlaylistSong(${i})">Play</button>
+        </div>
+      `).join("")}
+    `;
+  }
+
+  window.playPlaylistSong = function(index) {
+    const track = userPlaylist[index];
+    if (!track) return;
+    currentPlaylist = userPlaylist;
+    currentTrackIndex = index;
+    currentArtist = { name: track.artistName, avatar: track.cover };
+    audio.src = track.url;
+    playerTitle.textContent = track.title;
+    playerArtist.textContent = track.artistName;
+    playerCover.src = track.cover || "";
+    audio.play();
+    updatePlayPauseButton();
+  };
+
   function loadTrack(autoplay) {
     if (!currentPlaylist.length || currentTrackIndex < 0) return;
     const track = currentPlaylist[currentTrackIndex];
     audio.src = track.url;
     playerTitle.textContent = track.title;
-    playerArtist.textContent = currentArtist.name;
+    playerArtist.textContent = currentArtist.name || track.artistName || "";
     playerCover.src = track.cover || currentArtist.avatar || "";
     if (autoplay) audio.play();
     updatePlayPauseButton();
@@ -518,7 +687,6 @@
 
   function setWaveActive(active) {
     playerWave.style.opacity = active ? "1" : "0.3";
-    playerWave.style.animationPlayState = active ? "running" : "paused";
     [...playerWave.children].forEach(span => {
       span.style.animationPlayState = active ? "running" : "paused";
     });
@@ -578,6 +746,28 @@
 
   render();
 </script>
+
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyBh7tpYSecCX5D-WG3OvYvdmJ6Cl5vTc_Q",
+  authDomain: "kiribati-music-hub-fa681.firebaseapp.com",
+  projectId: "kiribati-music-hub-fa681",
+  storageBucket: "kiribati-music-hub-fa681.firebasestorage.app",
+  messagingSenderId: "480946024654",
+  appId: "1:480946024654:web:669849f51154aa2aea209f",
+  measurementId: "G-7HHVCCCVCN"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 </body>
 </html>
 
